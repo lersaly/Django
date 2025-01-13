@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Оценить тему{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <h1 class="card-title">Оценить тему "{{ topic.title }}"</h1>
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="mb-3">
+                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                <div class="alert alert-danger">
+                    {{ field.errors }}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary">Сохранить оценку</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
