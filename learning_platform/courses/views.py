@@ -4,6 +4,8 @@ from django.contrib import messages
 from django.db.models import Avg
 from .models import Course, Topic, StudentCourse, TopicRating
 from .forms import CourseForm, TopicForm, TopicRatingForm
+from django.contrib.auth import login
+from .forms import UserRegistrationForm
 
 @login_required
 def course_list(request):
@@ -72,3 +74,14 @@ def course_enroll(request, pk):
         StudentCourse.objects.create(student=request.user, course=course)
         messages.success(request, f'Вы успешно записались на курс "{course.title}"!')
     return redirect('course_detail', pk=pk)
+
+def register(request):
+    if request.method == 'POST':
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('course_list')
+    else:
+        form = UserRegistrationForm()
+    return render(request, 'registration/register.html', {'form': form})
