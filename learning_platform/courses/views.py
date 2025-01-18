@@ -54,8 +54,18 @@ def course_detail(request, pk):
 @login_required
 def topic_rate(request, topic_id):
     topic = get_object_or_404(Topic, pk=topic_id)
+    if not StudentCourse.objects.filter(student=request.user, course=topic.course).exists():
+        messages.error(request, 'Вы должны быть записаны на курс, чтобы оценивать темы')
+        return redirect('course_detail', pk=topic.course.pk)
+    
+    if topic.course.creator == request.user:
+        messages.error(request, 'Автор курса не может оценивать свои темы')
+        return redirect('course_detail', pk=topic.course.pk)
+
+    existing_rating = TopicRating.objects.filter(topic=topic, student=request.user).first()
+
     if request.method == 'POST':
-        form = TopicRatingForm(request.POST)
+        form = TopicRatingForm(request.POST, instance=existing_rating)
         if form.is_valid():
             rating = form.save(commit=False)
             rating.topic = topic
@@ -64,7 +74,7 @@ def topic_rate(request, topic_id):
             messages.success(request, 'Оценка успешно сохранена!')
             return redirect('course_detail', pk=topic.course.pk)
     else:
-        form = TopicRatingForm()
+        form = TopicRatingForm(instance=existing_rating)
     
     return render(request, 'courses/topic_rate.html', {
         'form': form,

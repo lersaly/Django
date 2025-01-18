@@ -32,17 +32,13 @@ class TopicForm(forms.ModelForm):
 class TopicRatingForm(forms.ModelForm):
     class Meta:
         model = TopicRating
-        fields = ['rating', 'comment']
+        fields = ['rating']
         widgets = {
             'rating': forms.NumberInput(attrs={
                 'class': 'form-control',
                 'min': '1',
                 'max': '10'
-            }),
-            'comment': forms.Textarea(attrs={
-                'class': 'form-control',
-                'rows': 4
-            }),
+            })
         }
 
 class UserRegistrationForm(UserCreationForm):

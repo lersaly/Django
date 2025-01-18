@@ -23,3 +23,8 @@ def divided_by(value, arg):
         return float(value) / float(arg)
     except (ValueError, ZeroDivisionError):
         return 0
+    
+@register.filter
+def filter_user_rating(ratings, user):
+    user_rating = ratings.filter(student=user).first()
+    return user_rating.rating if user_rating else None

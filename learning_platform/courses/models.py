@@ -53,9 +53,8 @@ class TopicRating(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='topic_ratings')
     rating = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(10)],
-        verbose_name="Оценка темы"
+        verbose_name="Оценка понятности темы (1 - совсем непонятно; 10 - идеально понятно)"
     )
-    comment = models.TextField(blank=True, null=True, verbose_name="Комментарий")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
