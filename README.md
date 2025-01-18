@@ -27,6 +27,10 @@ learning_platform/
 │
 ├── courses/                    
 │   ├── migrations/
+│   │   └── __init__.py
+│   ├── templatetags/
+│   │   ├── course_tags.py
+│   │   └── __init__.py
 │   ├── __init__.py
 │   ├── admin.py
 │   ├── apps.py
