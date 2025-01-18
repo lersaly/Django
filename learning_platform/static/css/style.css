@@ -68,3 +68,31 @@ body {
     border-color: #d39e00;
     color: #000;
 }
+
+.topic-statistics .card {
+    background-color: #f8f9fa;
+}
+
+.statistics-item {
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.rating-distribution {
+    font-size: 0.9em;
+}
+
+.accordion-button .badge {
+    font-size: 0.8em;
+    margin-left: 10px;
+}
+
+.rating-display {
+    display: flex;
+    align-items: center;
+}
+
+.rating-value {
+    font-size: 1.2em;
+    font-weight: bold;
+}

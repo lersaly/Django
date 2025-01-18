@@ -10,16 +10,25 @@
         <div class="d-flex justify-content-between align-items-center">
             <span class="text-muted">Автор: {{ course.creator.username }}</span>
             {% if is_creator %}
-                <span class="badge bg-info">Средняя оценка: {{ course.average_rating|floatformat:1 }}</span>
+                <span class="badge bg-info">Средняя оценка курса: {{ course.average_rating|floatformat:1 }}</span>
             {% endif %}
         </div>
     </div>
 </div>
 
+{% if not is_enrolled and not is_creator %}
+    <div class="mb-4">
+        <form method="post" action="{% url 'course_enroll' course.pk %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success">Записаться на курс</button>
+        </form>
+    </div>
+{% endif %}
+
 {% if is_creator %}
-<div class="mb-4">
-    <a href="{% url 'topic_create' course.id %}" class="btn btn-success">Добавить тему</a>
-</div>
+    <div class="mb-4">
+        <a href="{% url 'topic_create' course.id %}" class="btn btn-success">Добавить тему</a>
+    </div>
 {% endif %}
 
 <div class="accordion" id="topicsAccordion">
@@ -29,68 +38,98 @@
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
                     data-bs-target="#collapse{{ topic.id }}">
                 {{ topic.title }}
+                {% if is_creator %}
+                    {% with ratings=topic.ratings.all %}
+                        {% if ratings %}
+                            <span class="badge bg-info ms-2">
+                                Рейтинг: {{ ratings|avg_rating|floatformat:1 }}/10
+                            </span>
+                        {% endif %}
+                    {% endwith %}
+                {% endif %}
             </button>
         </h2>
         <div id="collapse{{ topic.id }}" class="accordion-collapse collapse" 
              aria-labelledby="heading{{ topic.id }}" data-bs-parent="#topicsAccordion">
             <div class="accordion-body">
-                {{ topic.content|linebreaks }}
-                {% if is_enrolled and not is_creator %}
-                <div class="mt-3">
-                    {% if topic.ratings.all %}
-                        {% if is_creator %}
-                            <div class="mt-2 text-muted">
-                                {% with ratings=topic.ratings.all %}
-                                    {% with total=0 count=0 %}
-                                        {% for rating in ratings %}
-                                            {% with total=total|add:rating.rating count=count|add:1 %}
-                                            {% endwith %}
-                                        {% endfor %}
-                                        {% if count > 0 %}
-                                            Средняя оценка: {{ total|divided_by:count|floatformat:1 }}/10
-                                        {% endif %}
-                                        ({{ ratings|length }} оценок)
-                                    {% endwith %}
-                                {% endwith %}
-                            </div>
-                        {% endif %}
-                    {% endif %}
-
-                    {% if is_enrolled and not is_creator %}
-                        <div class="mt-3">
-                            {% with user_rating=topic.ratings.all|filter_user_rating:user %}
-                                {% if user_rating %}
-                                    <div class="alert alert-info">
-                                        Ваша оценка: {{ user_rating }}/10
-                                    </div>
-                                {% else %}
-                                    <a href="{% url 'topic_rate' topic.id %}" class="btn btn-primary">Оценить понятность темы</a>
-                                {% endif %}
-                            {% endwith %}
-                        </div>
-                    {% endif %}
+                <div class="topic-content mb-3">
+                    {{ topic.content|linebreaks }}
                 </div>
+
+                {% if is_enrolled and not is_creator %}
+                    <!-- Блок для студентов -->
+                    <div class="student-rating mt-3">
+                        {% with user_rating=topic.ratings.all|filter_user_rating:user %}
+                            {% if user_rating %}
+                                <div class="alert alert-info">
+                                    <h6 class="mb-2">Ваша оценка:</h6>
+                                    <div class="rating-display">
+                                        <span class="rating-value">{{ user_rating }}/10</span>
+                                        <a href="{% url 'topic_rate' topic.id %}" class="btn btn-sm btn-outline-primary ms-2">
+                                            Изменить оценку
+                                        </a>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <a href="{% url 'topic_rate' topic.id %}" class="btn btn-primary">
+                                    Оценить понятность темы
+                                </a>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
                 {% endif %}
-                
+
+                {% if is_creator %}
+                    <!-- Блок для автора курса -->
                     {% with ratings=topic.ratings.all %}
-                    {% if ratings %}
-                        <div class="mt-2 text-muted">
-                            {% with total=0 count=0 %}
-                                {% for rating in ratings %}
-                                    {% with total=total|add:rating.rating count=count|add:1 %}
-                                    {% endwith %}
-                                {% endfor %}
-                                {% if count > 0 %}
-                                    Средняя оценка: {{ total|divided_by:count|floatformat:1 }}/10
-                                {% endif %}
-                                ({{ ratings|length }} оценок)
-                            {% endwith %}
+                        <div class="topic-statistics mt-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-title">Статистика по теме</h6>
+                                    {% if ratings %}
+                                        {% with avg_rating=ratings|avg_rating %}
+                                            <div class="statistics-item">
+                                                <p class="mb-1">
+                                                    <strong>Средняя оценка:</strong> 
+                                                    <span class="badge bg-info">{{ avg_rating|floatformat:1 }}/10</span>
+                                                </p>
+                                                <p class="mb-0">
+                                                    <strong>Количество оценок:</strong> 
+                                                    <span class="badge bg-secondary">{{ ratings|length }}</span>
+                                                </p>
+                                                <div class="rating-distribution mt-2">
+                                                    <small class="text-muted">
+                                                        Распределение оценок:
+                                                        {% for rating in ratings %}
+                                                            {% if forloop.first %}({% endif %}
+                                                            {{ rating.rating }}
+                                                            {% if not forloop.last %}, {% else %}){% endif %}
+                                                        {% endfor %}
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        {% endwith %}
+                                    {% else %}
+                                        <p class="text-muted mb-0">Пока нет оценок для этой темы</p>
+                                    {% endif %}
+                                </div>
+                            </div>
                         </div>
-                    {% endif %}
-                {% endwith %}
+                    {% endwith %}
+                {% endif %}
             </div>
         </div>
     </div>
     {% endfor %}
 </div>
+
+{% if is_enrolled %}
+    <div class="mt-4">
+        <form method="post" action="{% url 'course_unenroll' course.pk %}" 
+              onsubmit="return confirm('Вы уверены, что хотите отписаться от этого курса?');">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-warning">Отписаться от курса</button>
+        </form>
+    </div>
+{% endif %}
 {% endblock %}
