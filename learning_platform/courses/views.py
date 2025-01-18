@@ -11,7 +11,11 @@ from .forms import UserRegistrationForm
 def course_list(request):
     created_courses = Course.objects.filter(creator=request.user)
     enrolled_courses = Course.objects.filter(enrolled_students__student=request.user)
-    available_courses = Course.objects.exclude(enrolled_students__student=request.user)
+    available_courses = Course.objects.exclude(
+        creator=request.user  # исключаем курсы, где пользователь является автором
+    ).exclude(
+        enrolled_students__student=request.user  # исключаем курсы, на которые уже записан
+    )
     
     return render(request, 'courses/course_list.html', {
         'created_courses': created_courses,
@@ -108,3 +112,21 @@ def topic_create(request, course_id):
         'form': form,
         'course': course
     })
+
+@login_required
+def course_unenroll(request, pk):
+    enrollment = get_object_or_404(StudentCourse, student=request.user, course_id=pk)
+    if request.method == 'POST':
+        enrollment.delete()
+        messages.success(request, 'Вы успешно отписались от курса')
+    return redirect('course_list')
+
+@login_required
+def course_delete(request, pk):
+    course = get_object_or_404(Course, pk=pk, creator=request.user)
+    course_title = course.title
+    if request.method == 'POST':
+        course.delete()
+        messages.success(request, f'Курс "{course_title}" успешно удален')
+    return redirect('course_list')
+
