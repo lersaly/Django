@@ -18,14 +18,14 @@ static: CSS, JavaScript и медиафайлы
 
 learning_platform/
 │
-├── learning_platform/          # Основной проект
+├── learning_platform/          
 │   ├── __init__.py
 │   ├── settings.py
 │   ├── urls.py
 │   ├── asgi.py
 │   └── wsgi.py
 │
-├── courses/                    # Приложение
+├── courses/                    
 │   ├── migrations/
 │   ├── __init__.py
 │   ├── admin.py
@@ -45,6 +45,7 @@ learning_platform/
 │   │    ├── course_list.html
 │   │    ├── course_form.html
 │   │    ├── course_detail.html
+│   │    ├── topic_form.html
 │   │    └── topic_rate.html
 │   └── registration/
 │        ├── login.html
