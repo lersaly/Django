@@ -35,6 +35,7 @@ class Topic(models.Model):
     def __str__(self):
         return f"{self.course.title} - {self.title}"
 
+
 class StudentCourse(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='enrolled_courses')
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='enrolled_students')

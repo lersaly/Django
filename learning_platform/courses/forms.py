@@ -55,3 +55,14 @@ class UserRegistrationForm(UserCreationForm):
         for field in self.fields:
             self.fields[field].widget.attrs.update({'class': 'form-control'})
 
+
+class TopicForm(forms.ModelForm):
+    class Meta:
+        model = Topic
+        fields = ['title', 'content', 'order']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Заголовок материала'}),
+            'content': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Содержание материала', 'rows': 6}),
+            'order': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Порядковый номер'})
+        }
+

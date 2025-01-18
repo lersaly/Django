@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load course_tags %}
 {% block title %}{{ course.title }}{% endblock %}
 
 {% block content %}
@@ -16,7 +16,7 @@
 
 {% if is_creator %}
 <div class="mb-4">
-    <a href="{% url 'course_create' %}" class="btn btn-success">Добавить тему</a>
+    <a href="{% url 'topic_create' course.id %}" class="btn btn-success">Добавить тему</a>
 </div>
 {% endif %}
 
@@ -35,9 +35,36 @@
                 {{ topic.content|linebreaks }}
                 {% if is_enrolled and not is_creator %}
                 <div class="mt-3">
-                    <a href="{% url 'topic_rate' topic.id %}" class="btn btn-primary">Оценить тему</a>
+                    {% if topic.ratings.all %}
+                        {% for rating in topic.ratings.all %}
+                            {% if rating.student == user %}
+                                <div class="alert alert-info">
+                                    Ваша оценка: {{ rating.rating }}/10
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <a href="{% url 'topic_rate' topic.id %}" class="btn btn-primary">Оценить тему</a>
+                    {% endif %}
                 </div>
                 {% endif %}
+                
+                    {% with ratings=topic.ratings.all %}
+                    {% if ratings %}
+                        <div class="mt-2 text-muted">
+                            {% with total=0 count=0 %}
+                                {% for rating in ratings %}
+                                    {% with total=total|add:rating.rating count=count|add:1 %}
+                                    {% endwith %}
+                                {% endfor %}
+                                {% if count > 0 %}
+                                    Средняя оценка: {{ total|divided_by:count|floatformat:1 }}/10
+                                {% endif %}
+                                ({{ ratings|length }} оценок)
+                            {% endwith %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
             </div>
         </div>
     </div>

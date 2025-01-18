@@ -85,3 +85,26 @@ def register(request):
     else:
         form = UserRegistrationForm()
     return render(request, 'registration/register.html', {'form': form})
+
+
+
+
+@login_required
+def topic_create(request, course_id):
+    course = get_object_or_404(Course, id=course_id, creator=request.user)
+    
+    if request.method == 'POST':
+        form = TopicForm(request.POST)
+        if form.is_valid():
+            topic = form.save(commit=False)
+            topic.course = course
+            topic.save()
+            messages.success(request, 'Материал успешно добавлен!')
+            return redirect('course_detail', pk=course.id)
+    else:
+        form = TopicForm()
+    
+    return render(request, 'courses/topic_form.html', {
+        'form': form,
+        'course': course
+    })
