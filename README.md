@@ -25,7 +25,10 @@ learning_platform/
 │   ├── asgi.py
 │   └── wsgi.py
 │
-├── courses/                    
+├── courses/    
+│   ├── management/
+│   │   └── commands/    
+│   │       └── wait_for_db.py
 │   ├── migrations/
 │   │   └── __init__.py
 │   ├── templatetags/
@@ -56,5 +59,7 @@ learning_platform/
 │        └── register.html
 │
 ├── manage.py
-├── requirements.txt
+├── Dockerfile
+├── docker-compose.yml
+├── .dockerignore
 └── venv/
