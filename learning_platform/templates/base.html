@@ -19,7 +19,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'course_list' %}">Курсы</a>
                     </li>
-                    {% if user.is_authenticated %}
+                    {% if user.is_authenticated and user_profile.is_instructor %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'course_create' %}">Создать курс</a>
                         </li>
@@ -28,7 +28,9 @@
                 <ul class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}
                         <li class="nav-item">
-                            <span class="nav-link">{{ user.username }}</span>
+                            <span class="nav-link">
+                                {{ user.username }} ({% if user_profile.is_instructor %}Преподаватель{% else %}Студент{% endif %})
+                            </span>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'logout' %}">Выйти</a>

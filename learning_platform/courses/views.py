@@ -6,25 +6,35 @@ from .models import Course, Topic, StudentCourse, TopicRating
 from .forms import CourseForm, TopicForm, TopicRatingForm
 from django.contrib.auth import login
 from .forms import UserRegistrationForm
+from django.db.models import Q
+from .models import UserProfile
 
 @login_required
 def course_list(request):
-    created_courses = Course.objects.filter(creator=request.user)
-    enrolled_courses = Course.objects.filter(enrolled_students__student=request.user)
-    available_courses = Course.objects.exclude(
-        creator=request.user  # исключаем курсы, где пользователь является автором
-    ).exclude(
-        enrolled_students__student=request.user  # исключаем курсы, на которые уже записан
-    )
+    user_profile = UserProfile.objects.get(user=request.user)
     
-    return render(request, 'courses/course_list.html', {
-        'created_courses': created_courses,
-        'enrolled_courses': enrolled_courses,
-        'available_courses': available_courses
-    })
+    if user_profile.is_instructor:
+        created_courses = Course.objects.filter(creator=request.user)
+        return render(request, 'courses/course_list.html', {
+            'created_courses': created_courses,
+        })
+    else:
+        enrolled_courses = Course.objects.filter(enrolled_students__student=request.user)
+        available_courses = Course.objects.exclude(
+            Q(enrolled_students__student=request.user) | Q(creator=request.user)
+        )
+        return render(request, 'courses/course_list.html', {
+            'enrolled_courses': enrolled_courses,
+            'available_courses': available_courses
+        })
 
 @login_required
 def course_create(request):
+    user_profile = UserProfile.objects.get(user=request.user)
+    if not user_profile.is_instructor:
+        messages.error(request, 'Только преподаватели могут создавать курсы')
+        return redirect('course_list')
+        
     if request.method == 'POST':
         form = CourseForm(request.POST)
         if form.is_valid():
@@ -94,10 +104,20 @@ def register(request):
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
+            
+            UserProfile.objects.create(
+                user=user,
+                is_instructor=form.cleaned_data['is_instructor']
+            )
+            
             login(request, user)
+            messages.success(request, 'Регистрация успешно завершена!')
             return redirect('course_list')
+        else:
+            messages.error(request, 'Пожалуйста, исправьте ошибки в форме.')
     else:
         form = UserRegistrationForm()
+    
     return render(request, 'registration/register.html', {'form': form})
 
 

@@ -57,7 +57,6 @@
                 </div>
 
                 {% if is_enrolled and not is_creator %}
-                    <!-- Блок для студентов -->
                     <div class="student-rating mt-3">
                         {% with user_rating=topic.ratings.all|filter_user_rating:user %}
                             {% if user_rating %}
@@ -80,7 +79,6 @@
                 {% endif %}
 
                 {% if is_creator %}
-                    <!-- Блок для автора курса -->
                     {% with ratings=topic.ratings.all %}
                         <div class="topic-statistics mt-3">
                             <div class="card">

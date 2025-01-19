@@ -3,6 +3,7 @@ from .models import Course, Topic, TopicRating
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
+
 class CourseForm(forms.ModelForm):
     class Meta:
         model = Course
@@ -42,14 +43,32 @@ class TopicRatingForm(forms.ModelForm):
         }
 
 class UserRegistrationForm(UserCreationForm):
+    email = forms.EmailField(
+        required=True,
+        widget=forms.EmailInput(attrs={'class': 'form-control'})
+    )
+    is_instructor = forms.BooleanField(
+        required=False,
+        initial=False,
+        label='Зарегистрироваться как преподаватель',
+        help_text='Отметьте, если вы планируете создавать курсы',
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+    )
+    
     class Meta:
         model = User
-        fields = ['username', 'email', 'password1', 'password2']
-        
+        fields = ['username', 'email', 'password1', 'password2', 'is_instructor']
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field in self.fields:
-            self.fields[field].widget.attrs.update({'class': 'form-control'})
+        self.fields['username'].widget.attrs.update({'class': 'form-control'})
+        self.fields['password1'].widget.attrs.update({'class': 'form-control'})
+        self.fields['password2'].widget.attrs.update({'class': 'form-control'})
+        
+        self.fields['username'].label = 'Имя пользователя'
+        self.fields['email'].label = 'Email'
+        self.fields['password1'].label = 'Пароль'
+        self.fields['password2'].label = 'Подтверждение пароля'
 
 
 class TopicForm(forms.ModelForm):

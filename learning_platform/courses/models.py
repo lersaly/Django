@@ -53,7 +53,7 @@ class TopicRating(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='topic_ratings')
     rating = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(10)],
-        verbose_name="Оценка понятности темы (1 - совсем непонятно; 10 - идеально понятно)"
+        verbose_name="Оценка понятности изложения темы (1 - совсем непонятно; 10 - идеально понятно)"
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -62,3 +62,10 @@ class TopicRating(models.Model):
 
     def __str__(self):
         return f"{self.topic.title} - {self.student.username} - {self.rating}"
+    
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    is_instructor = models.BooleanField(default=False)
+    
+    def __str__(self):
+        return f"{self.user.username} - {'Преподаватель' if self.is_instructor else 'Студент'}"
