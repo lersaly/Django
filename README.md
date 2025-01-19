@@ -61,5 +61,4 @@ learning_platform/
 ├── manage.py
 ├── Dockerfile
 ├── docker-compose.yml
-├── .dockerignore
 └── venv/
