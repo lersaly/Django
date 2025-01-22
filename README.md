@@ -1,5 +1,7 @@
 Можно использовать докер контейнер:
+
 docker pull lersaly/learning_platform:latest
+
 docker run -p 8000:8000 lersaly/learning_platform:latest
 
 Проект содержит следующую структуру:
@@ -15,7 +17,9 @@ learning_platform/
 ├── courses/    
 │   ├── management/
 │   │   └── commands/    
-│   │       └── wait_for_db.py
+│   │       ├── __init__.py
+│   │       ├── wait_for_db.py
+│   │       └── create_superuser.py
 │   ├── migrations/
 │   │   └── __init__.py
 │   ├── templatetags/
@@ -24,6 +28,7 @@ learning_platform/
 │   ├── __init__.py
 │   ├── admin.py
 │   ├── apps.py
+│   ├── context_processors.py
 │   ├── forms.py
 │   ├── models.py
 │   ├── urls.py
@@ -39,6 +44,7 @@ learning_platform/
 │   │    ├── course_list.html
 │   │    ├── course_form.html
 │   │    ├── course_detail.html
+│   │    ├── enrolled_students.html
 │   │    ├── topic_form.html
 │   │    └── topic_rate.html
 │   └── registration/
