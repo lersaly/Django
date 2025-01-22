@@ -13,13 +13,21 @@ docker pull lersaly/learning_platform:latest
 docker run -p 8000:8000 lersaly/learning_platform:latest
 
 Проект содержит следующую структуру:
+
 learning_platform/
+
 │
-├── learning_platform/          
+
+├── learning_platform/        
+
 │   ├── __init__.py
+
 │   ├── settings.py
+
 │   ├── urls.py
+
 │   ├── asgi.py
+
 │   └── wsgi.py
 │
 ├── courses/    
