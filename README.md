@@ -1,3 +1,11 @@
+Сайт доступен по адресу:
+
+https://learning.dizeldigital.ru/login/?next=/
+
+Панель админа:
+
+https://learning.dizeldigital.ru/admin/login/?next=/admin/%3Fnext%3D/
+
 Можно использовать докер контейнер:
 
 docker pull lersaly/learning_platform:latest
