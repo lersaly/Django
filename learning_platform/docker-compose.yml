@@ -11,7 +11,15 @@ services:
     environment:
       - DEBUG=1
       - DJANGO_SETTINGS_MODULE=learning_platform.settings
+      - DJANGO_SUPERUSER_USERNAME=admin
+      - DJANGO_SUPERUSER_EMAIL=admin@test.ru
+      - DJANGO_SUPERUSER_PASSWORD=admin
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py create_superuser &&
+             python manage.py runserver 0.0.0.0:8000"
 
 volumes:
   static_volume:
+
 

@@ -160,3 +160,19 @@ def course_delete(request, pk):
         messages.success(request, f'Курс "{course_title}" успешно удален')
     return redirect('course_list')
 
+@login_required
+def enrolled_students(request, pk):
+    course = get_object_or_404(Course, pk=pk)
+    
+    if course.creator != request.user:
+        messages.error(request, 'У вас нет доступа к этой странице')
+        return redirect('course_list')
+    
+    enrolled_students = StudentCourse.objects.filter(course=course).select_related('student').prefetch_related(
+        'student__topic_ratings'
+    ).order_by('-enrolled_at')
+    
+    return render(request, 'courses/enrolled_students.html', {
+        'course': course,
+        'enrolled_students': enrolled_students
+    })

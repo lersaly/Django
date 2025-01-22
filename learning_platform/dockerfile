@@ -1,13 +1,16 @@
 FROM python:3.10-slim
 
+# Устанавливаем рабочую директорию
 WORKDIR /app
 
+# Копируем файл зависимостей и устанавливаем их
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Копируем все файлы проекта
 COPY . .
 
-# Создаем директории для management commands
+# Создаем директории для management команд
 RUN mkdir -p courses/management/commands
 RUN touch courses/management/__init__.py
 RUN touch courses/management/commands/__init__.py
@@ -20,7 +23,11 @@ RUN useradd -m myuser
 RUN chown -R myuser:myuser /app
 USER myuser
 
+# Открываем порт для приложения
 EXPOSE 8000
 
-# Запускаем приложение
-CMD ["sh", "-c", "python manage.py migrate && python manage.py collectstatic --noinput && python manage.py runserver 0.0.0.0:8000"]
+# Команда запуска приложения
+CMD ["sh", "-c", "python manage.py migrate && \
+    python manage.py create_superuser && \
+    python manage.py collectstatic --noinput && \
+    python manage.py runserver 0.0.0.0:8000"]

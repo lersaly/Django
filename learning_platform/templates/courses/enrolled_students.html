@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Студенты курса {{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-body">
+        <h1 class="card-title">Студенты курса "{{ course.title }}"</h1>
+        <a href="{% url 'course_detail' course.pk %}" class="btn btn-outline-primary mb-4">Вернуться к курсу</a>
+        
+        {% if enrolled_students %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Имя пользователя</th>
+                            <th>Дата записи</th>
+                            <th>Прогресс</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for enrollment in enrolled_students %}
+                            <tr>
+                                <td>{{ enrollment.student.username }}</td>
+                                <td>{{ enrollment.enrolled_at|date:"d.m.Y H:i" }}</td>
+                                <td>
+                                    {% with rated_count=enrollment.student.topic_ratings.filter|length %}
+                                        {% if course.topics.all|length > 0 %}
+                                            {% widthratio rated_count course.topics.all|length 100 %}%
+                                        {% else %}
+                                            0%
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                На данный момент на курс никто не записался.
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

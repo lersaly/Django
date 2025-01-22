@@ -28,6 +28,7 @@
 {% if is_creator %}
     <div class="mb-4">
         <a href="{% url 'topic_create' course.id %}" class="btn btn-success">Добавить тему</a>
+        <a href="{% url 'enrolled_students' course.id %}" class="btn btn-info">Список студентов</a>
     </div>
 {% endif %}
 
