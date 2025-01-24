@@ -53,6 +53,7 @@ learning_platform/
 │   │    ├── course_form.html
 │   │    ├── course_detail.html
 │   │    ├── enrolled_students.html
+│   │    ├── topic_delete.html
 │   │    ├── topic_form.html
 │   │    └── topic_rate.html
 │   └── registration/
