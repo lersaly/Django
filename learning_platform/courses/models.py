@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.utils.safestring import mark_safe
+import markdown
 
 class Course(models.Model):
     title = models.CharField(max_length=200, verbose_name="Название курса")
@@ -34,6 +36,11 @@ class Topic(models.Model):
 
     def __str__(self):
         return f"{self.course.title} - {self.title}"
+    
+    def content_as_html(self):
+        """Преобразует Markdown контент в HTML"""
+        from .forms import markdown_to_html 
+        return markdown_to_html(self.content)
 
 class StudentCourse(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='enrolled_courses')

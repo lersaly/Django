@@ -96,3 +96,23 @@ body {
     font-size: 1.2em;
     font-weight: bold;
 }
+
+pre {
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    overflow-x: auto;
+}
+
+code {
+    font-family: 'Courier New', Courier, monospace;
+    background-color: #f1f1f1;
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
+.markdown-input {
+    font-family: monospace;
+    min-height: 300px;
+}

@@ -11,4 +11,6 @@ urlpatterns = [
     path('course/<int:pk>/unenroll/', views.course_unenroll, name='course_unenroll'),
     path('course/<int:pk>/delete/', views.course_delete, name='course_delete'),
     path('course/<int:pk>/students/', views.enrolled_students, name='enrolled_students'),
+    path('topic/<int:topic_id>/edit/', views.topic_edit, name='topic_edit'),
+    path('topic/<int:topic_id>/delete/', views.topic_delete, name='topic_delete'),
 ]

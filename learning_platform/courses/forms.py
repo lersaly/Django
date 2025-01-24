@@ -2,7 +2,8 @@ from django import forms
 from .models import Course, Topic, TopicRating
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-
+import markdown
+from django.utils.safestring import mark_safe
 
 class CourseForm(forms.ModelForm):
     class Meta:
@@ -71,13 +72,49 @@ class UserRegistrationForm(UserCreationForm):
         self.fields['password2'].label = 'Подтверждение пароля'
 
 
+class MarkdownTextarea(forms.Textarea):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.attrs['class'] = 'form-control markdown-input'
+
 class TopicForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['content'].widget = MarkdownTextarea(
+            attrs={
+                'placeholder': 'Введите содержание материала. Поддерживается Markdown:\n\n'
+                              '# Заголовки\n'
+                              '## Подзаголовки\n'
+                              '```python\n'
+                              '# Код на Python\n'
+                              'def example():\n'
+                              '    print("Hello World!")\n'
+                              '```\n'
+            }
+        )
+
+    def clean_content(self):
+        content = self.cleaned_data['content']
+        return content
+
     class Meta:
         model = Topic
         fields = ['title', 'content', 'order']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Заголовок материала'}),
-            'content': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Содержание материала', 'rows': 6}),
             'order': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Порядковый номер'})
         }
 
+def markdown_to_html(markdown_text):
+    """
+    Конвертирует Markdown текст в HTML с поддержкой кода и изображений
+    """
+    return mark_safe(markdown.markdown(markdown_text, 
+        extensions=[
+            'fenced_code',     
+            'codehilite',      
+            'tables',          
+            'nl2br'            
+        ], 
+        safe_mode=True
+    ))

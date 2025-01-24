@@ -28,6 +28,7 @@ def course_list(request):
             'available_courses': available_courses
         })
 
+
 @login_required
 def course_create(request):
     user_profile = UserProfile.objects.get(user=request.user)
@@ -98,6 +99,7 @@ def course_enroll(request, pk):
         StudentCourse.objects.create(student=request.user, course=course)
         messages.success(request, f'Вы успешно записались на курс "{course.title}"!')
     return redirect('course_detail', pk=pk)
+
 
 def register(request):
     if request.method == 'POST':
@@ -175,4 +177,39 @@ def enrolled_students(request, pk):
     return render(request, 'courses/enrolled_students.html', {
         'course': course,
         'enrolled_students': enrolled_students
+    })
+
+@login_required
+def topic_edit(request, topic_id):
+    topic = get_object_or_404(Topic, id=topic_id, course__creator=request.user)
+    
+    if request.method == 'POST':
+        form = TopicForm(request.POST, instance=topic)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Материал успешно обновлен!')
+            return redirect('course_detail', pk=topic.course.id)
+    else:
+        form = TopicForm(instance=topic)
+    
+    return render(request, 'courses/topic_form.html', {
+        'form': form,
+        'course': topic.course,
+        'editing': True 
+    })
+
+@login_required
+def topic_delete(request, topic_id):
+    topic = get_object_or_404(Topic, id=topic_id, course__creator=request.user)
+    course = topic.course
+    
+    if request.method == 'POST':
+        topic_title = topic.title
+        topic.delete()
+        messages.success(request, f'Материал "{topic_title}" успешно удален')
+        return redirect('course_detail', pk=course.id)
+    
+    return render(request, 'courses/topic_delete.html', {
+        'topic': topic,
+        'course': course
     })

@@ -1,13 +1,25 @@
 {% extends 'base.html' %}
 
-{% block title %}Добавить материал{% endblock %}
+{% block title %}
+    {% if editing %}
+        Редактировать материал
+    {% else %}
+        Добавить материал
+    {% endif %}
+{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-8">
         <div class="card">
             <div class="card-body">
-                <h2 class="card-title mb-4">Добавить материал в курс "{{ course.title }}"</h2>
+                <h2 class="card-title mb-4">
+                    {% if editing %}
+                        Редактировать материал
+                    {% else %}
+                        Добавить материал в курс "{{ course.title }}"
+                    {% endif %}
+                </h2>
                 <form method="post">
                     {% csrf_token %}
                     {% for field in form %}
@@ -22,7 +34,13 @@
                         </div>
                     {% endfor %}
                     <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">Добавить материал</button>
+                        <button type="submit" class="btn btn-primary">
+                            {% if editing %}
+                                Сохранить изменения
+                            {% else %}
+                                Добавить материал
+                            {% endif %}
+                        </button>
                         <a href="{% url 'course_detail' course.id %}" class="btn btn-outline-secondary">Отмена</a>
                     </div>
                 </form>
